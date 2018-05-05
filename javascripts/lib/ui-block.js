@@ -262,9 +262,9 @@ var uiBlock = function () {
                 .addClass("select-wallet-file")
                 .html(
                     "<p data-i18n=swf/name></p>" +
-                    '<label class="file empty"><span data-i18n=swf/button></span><input type=file></label>' +
+                    '<label class="file empty btn btn-success"><span data-i18n=swf/button></span><input type=file></label>' +
                     '<label class="hide pass"><span data-i18n=swf/good></span><input type=password></label>' +
-                    '<button class="btn btn-block" data-i18n=swf/unlock></button>' 
+                    '<div><button class="btn btn-primary" data-i18n=swf/unlock></button></div>' 
                     )
                 .on("click", "button", onClickUnlock)
                 .on("keyup", "input[type=password]", onKeyUpPassword)

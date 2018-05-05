@@ -93,3 +93,73 @@ body {
 .btn-group-toggle .active {
     background-color: #A1CDF1 !important;
 }
+
+
+
+
+
+
+/*
+    .select-wallet-file
+    ============================================================
+    */
+
+    /* .select-wallet-file label.file {
+        background-color: #f5f5f5;
+        border-radius: 3px;
+        cursor: pointer;
+        display: block;
+        font-size: 19px;
+        font-weight: bold;
+        line-height: 50px;
+        overflow: hidden;
+        text-align: center;
+        text-overflow: ellipsis;
+    } */
+
+    #wallet-container-wrapper {
+        
+        /* padding: 10px 40px; */
+    }
+    #wallet-container {
+        padding: 20px;
+        border: 1px solid #efefef;
+        background-color: rgba(255,255,255,0.1);
+        border-radius: 5px;
+    }
+    #walletinfo {
+        border-top: 1px solid #efefef;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+    /* .select-wallet-file .empty {
+        border: 1px solid red;
+    } */
+    
+    .select-wallet-file input[type=file] {
+        display: none;
+    }
+    
+    .select-wallet-file label.pass {
+        display: block;
+    }
+    
+    .select-wallet-file input[type=password] {
+        background-color: #f5f5f5;
+        border: 1px solid #e8e8e8;
+        border-radius: 3px;
+        display: block;
+        height: 3em;
+        letter-spacing: .3em;
+        margin-top: 10px;
+        padding: 0 10px;
+        width: 100%;
+    }
+    
+    .select-wallet-file label.hide {
+        display: none;
+    }
+    
+    .select-wallet-file .comment {
+        font-size: .8rem;
+    }

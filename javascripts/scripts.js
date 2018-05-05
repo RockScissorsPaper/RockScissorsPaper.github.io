@@ -7,9 +7,14 @@ const gasLimit = 2000000;
 
 $(function() {
     $(document).on('.data-api');
+    $("#keystore").on("click", onClickKeystore);
+    $("#togglePassword").on("change", onChangeTogglePassword);
+    
 
     // Nebulas stuff
     var HttpRequest = require("nebulas").HttpRequest;
+    var nebulas = require("nebulas");
+    var Utils = nebulas.Utils;
     var Neb = require("nebulas").Neb;
     var Account = require("nebulas").Account;
     var Transaction = require("nebulas").Transaction;
@@ -18,6 +23,9 @@ $(function() {
     var account, tx, txhash;
     var api = neb.api;
     var chainID = 1;
+    var gAccount;
+    var gFileJson;
+    var yourWalletAddress;
 
     // api.getAccountState({address: "n1QsosVXKxiV3B4iDWNmxfN4VqpHn2TeUcn"}).then(function(state) {
     //     console.log(state);
@@ -31,6 +39,66 @@ $(function() {
         showAlert(err);
     });
 
+    // WALLET
+    uiBlock.insert({
+        footer: ".footer",
+        header: ".header",
+        logoMain: ".logo-main",
+        selectWalletFile: [".select-wallet-file", onUnlockFile]
+    });
+    
+    function onUnlockFile(swf, fileJson, account, password) {
+        try {
+            gAccount = account;
+            gFileJson = fileJson;
+            account.fromKey(fileJson, password);
+
+            yourWalletAddress = account.getAddressString();
+    
+            $("#address").val(account.getAddressString());
+            $("#sideaddress").text(account.getAddressString());
+            $("#password").val(account.getPrivateKeyString());
+            $("#addressqr").html('').qrcode(account.getAddressString());
+            $("#privateqr").html('').qrcode(account.getPrivateKeyString());
+            $("#walletinfo").show();
+    
+            neb.api.getAccountState(account.getAddressString())
+                .then(function (resp) {
+                    if (resp.error) {
+                        // throw new Error(resp.error);
+                        showAlert(resp.error);
+                    } else {
+                        $("#amount").val(nebulas.Unit.fromBasic(Utils.toBigNumber(resp.balance), "nas").toNumber() + " NAS");
+                    }
+                })
+                .catch(function (e) {
+                    // this catches e thrown by nebulas.js!neb
+                    showAlert(e.message);
+                    // bootbox.dialog({
+                    //     backdrop: true,
+                    //     onEscape: true,
+                    //     message: i18n.apiErrorToText(e.message),
+                    //     size: "large",
+                    //     title: "Error"
+                    // });
+                });
+        } catch (e) {
+            // this catches e thrown by nebulas.js!account
+            showAlert(e);
+            // bootbox.dialog({
+            //     backdrop: true,
+            //     onEscape: true,
+            //     message: localSave.getItem("lang") == "en" ? e : "keystore 文件错误, 或者密码错误",
+            //     size: "large",
+            //     title: "Error"
+            // });
+        }
+    }
+
+    function onClickKeystore() {
+        var blob = new Blob([JSON.stringify(gFileJson)], { type: "application/json; charset=utf-8" });
+        saveAs(blob, gAccount.getAddressString());
+    }    
 
     $(".start-battle").click(function() {
         createDuel();
@@ -42,17 +110,25 @@ $(function() {
     });
     $("#fight").click(function() {
         // Get values
-        var yourWalletAddress = $("#yourWalletAddress").val();
+        // var yourWalletAddress = $("#yourWalletAddress").val();
         var address = $("#address").val();
-        var amount = $("#amount").val();
+        var amount = $("#betAmount").val();
         var choice = $('input[name="choice-options"]:checked').val();
         if (amount && amount.trim() != "" && isPositiveInteger(amount.trim())) {
             amount = parseInt(amount);
             if (choice && choice.trim() != "") {
-                if (yourWalletAddress && yourWalletAddress != "") {
+                // if (yourWalletAddress && yourWalletAddress != "") {
                     // yourWalletAddress = "n1QsosVXKxiV3B4iDWNmxfN4VqpHn2TeUcn";
                     api.getAccountState({address: yourWalletAddress}).then(function(state) {
                         console.log(state);
+
+                        var player1_choice = choice;
+                        var player1_secret = "8a9sdu983242";
+                        var hash_input = player1_choice + player1_secret;
+                        var player1_encrypted_choice = "" + _hash(hash_input);
+                        // 0 = not set, 1 = Rock, 2 = Paper, 3 = Scissors
+
+                        console.log(player1_choice, player1_secret, hash_input, player1_encrypted_choice);
 
                         var callParamsObj = {
                             chainID: chainID,
@@ -64,7 +140,7 @@ $(function() {
                             gasLimit: gasLimit,
                             contract: {
                                 function: "create_game",
-                                args: "[\"-427436702\", 0]"
+                                args: JSON.stringify([player1_encrypted_choice, 0])
                             }
                         };
 
@@ -108,9 +184,9 @@ $(function() {
                         console.log(err);
                         showAlert(err);
                     });
-                } else {
-                    showAlert("Your wallet address is required.");
-                }
+                // } else {
+                    // showAlert("Your wallet address is required.");
+                // }
             } else {
                 showAlert("Please choose a throw!");
             }
@@ -120,6 +196,29 @@ $(function() {
 
     });
 });
+
+
+function _hash(input) {
+    var hash = 0;
+    if (input.length === 0) return hash;
+    for (var i = 0; i < input.length; i++) {
+        var char = input.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+
+    return hash;
+}
+
+function onChangeTogglePassword(e) {
+    if (e.target.checked) {
+        $("#password").prop("type", "text");
+        $(".key_qr").removeClass("display-none");
+    } else {
+        $("#password").prop("type", "password");
+        $(".key_qr").addClass("display-none");
+    }
+}
 
 function isPositiveInteger(n) {
     return n == "0" || ((n | 0) > 0 && n % 1 == 0);
@@ -290,71 +389,3 @@ Draw();
 
 
 // 
-
-
-uiBlock.insert({
-    footer: ".footer",
-    header: ".header",
-    logoMain: ".logo-main",
-    selectWalletFile: [".select-wallet-file", onUnlockFile]
-});
-
-function onUnlockFile(swf, fileJson, account, password) {
-    try {
-        gAccount = account;
-        gFileJson = fileJson;
-        account.fromKey(fileJson, password);
-
-        $("#address").val(account.getAddressString());
-        $("#sideaddress").text(account.getAddressString());
-        $("#password").val(account.getPrivateKeyString());
-        $("#addressqr").html('').qrcode(account.getAddressString());
-        $("#privateqr").html('').qrcode(account.getPrivateKeyString());
-        $("#walletinfo").show();
-
-        neb.api.getAccountState(account.getAddressString())
-            .then(function (resp) {
-                if (resp.error) {
-                    throw new Error(resp.error);
-                } else {
-                    $("#amount").val(nebulas.Unit.fromBasic(Utils.toBigNumber(resp.balance), "nas").toNumber() + " NAS");
-                }
-            })
-            .catch(function (e) {
-                // this catches e thrown by nebulas.js!neb
-
-                bootbox.dialog({
-                    backdrop: true,
-                    onEscape: true,
-                    message: i18n.apiErrorToText(e.message),
-                    size: "large",
-                    title: "Error"
-                });
-            });
-    } catch (e) {
-        // this catches e thrown by nebulas.js!account
-
-        bootbox.dialog({
-            backdrop: true,
-            onEscape: true,
-            message: localSave.getItem("lang") == "en" ? e : "keystore 文件错误, 或者密码错误",
-            size: "large",
-            title: "Error"
-        });
-    }
-}
-
-function onClickKeystore() {
-    var blob = new Blob([JSON.stringify(gFileJson)], { type: "application/json; charset=utf-8" });
-    saveAs(blob, gAccount.getAddressString());
-}
-
-function onChangeTogglePassword(e) {
-    if (e.target.checked) {
-        $("#password").prop("type", "text");
-        $(".key_qr").removeClass("display-none");
-    } else {
-        $("#password").prop("type", "password");
-        $(".key_qr").addClass("display-none");
-    }
-}
