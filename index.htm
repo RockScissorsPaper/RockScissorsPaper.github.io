@@ -1,0 +1,278 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>石头剪刀布 Rock Scissors Paper</title>
+    <meta name="description" content="石头剪刀布 Rock Scissors Paper">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="stylesheets/reset.css">
+    <script src="javascripts/lib/jquery-3.3.1.min.js"></script>
+    <script src="javascripts/lib/jquery.qrcode.min.js" data-depends=jquery></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    
+    <script src="javascripts/lib/bootbox.min.js"></script>
+    <script src="javascripts/lib/Blob.js"></script>
+    <script src="javascripts/lib/FileSaver.min.js"></script>
+    <script src="javascripts/dist/nebulas.js"></script>
+    <script src="javascripts/lib/1-localSave.js"></script>
+    <script src="javascripts/lib/home.v1.js"></script>
+    <script src="javascripts/lib/i18n.js" data-depends=jquery.slim></script>
+    
+    <script src="javascripts/lib/bootbox.min.js" data-depends="bootstrap jquery.slim"></script>
+    <script src="javascripts/lib/ui-block.js" data-depends="bootbox blockies jquery.slim nebulas.js"></script>
+
+
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="stylesheets/stylesheet.css">
+</head>
+
+<body>
+    
+    <!-- MAIN PAGE -->
+    <div id="main" class="page">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <!-- <div class=logo-main></div> -->
+                    <!-- <div class=header></div> -->
+                    <div class="container select-wallet-file"></div>
+                    <!-- <div class="container select-wallet-file"><p data-i18n="swf/name">Select Your Wallet File:</p><label class="file empty"><span data-i18n="swf/button">SELECT WALLET FILE...</span><input type="file"></label><label class="hide pass"><span data-i18n="swf/good">Your wallet is encrypted. Good! Please enter the password.</span><input type="password"></label><button class="btn btn-block" data-i18n="swf/unlock">Unlock</button></div> -->
+                    <div id=walletinfo class="container transaction">
+                        <div class=row>
+                            <div class=col>
+                                <div class=form-group>
+                                    <label for=address data-i18n=wallet-info/your-addr>Your Address</label>
+                                    <input type=text class=form-control id=address disabled>
+                                </div>
+                                <div class=form-group>
+                                    <label for=amount data-i18n=wallet-info/acc-balance>Account Balance : </label>
+                                    <input type=text id=amount class=form-control disabled>
+                                </div>
+                                <div class=form-group>
+                                    <label for=keystore>
+                                        <span data-i18n=keystore-file>Keystore File</span>
+                                        (JSON / Recommended / Encrypted)
+                                    </label>
+                                    <button type=submit class="btn btn-default col-xs-12 col-sm-12 col-md-12 text-center" id=keystore data-i18n=download>Download</button>
+                                </div>
+                                <div class=form-group>
+                                    <label for=password data-i18n=wallet-info/private-key>Private Key (unencrypted)</label>
+                                    <input type=password id=password class=form-control disabled>
+                                    <div>
+                                        <input id=togglePassword type=checkbox>
+                                        <label for=togglePassword>visible</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col qr_code">
+                                <div class=text-center>
+                                    <label for=addressqr data-i18n=wallet-info/your-addr>Your Address</label>
+                                    <div class=form-group id=addressqr></div>
+                                </div>
+                                <div class="display-none key_qr text-center">
+                                    <label for=privateqr data-i18n=wallet-info/private-key>Private Key (unencrypted)</label>
+                                    <div class=form-group id=privateqr></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN PAGE -->
+    <div id="main" class="page">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div><img src="images/main_light.png" /></div>
+                    <div>
+                        <a id="start" class="start-battle btn btn-primary btn-lg btn-xlg" href="#" role="button">发起挑战 Create Duel</a>
+                    </div>
+                    <p class="info">王者无敌！没有什么是石头剪刀布不能解决的！如果有，再来一场</p>
+                </div>
+            </div>
+        </div>
+   </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="login" class="page hidden">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <div class="input-group input-group-lg">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">wallet address</span>
+                            </div>
+                            <input type="text" class="form-control" id="walletAddress">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VS PAGE -->
+    <div id="vs" class="page" style="display:none;">
+        <form>
+            <div class="container form-container">
+                <div class="row">
+                    <div class="col">
+                        <div class="create-duel-label">
+                            <h1>发起挑战 Create Duel</h1>
+                        </div>
+                        <div class="duel-label">
+                            <h1>迎战者 Dueling with</h1>
+                            <h2><span class="duel-address">81927391823</span></h2>
+                        </div>
+                        <div class="step">
+                            <p>第一步：下注 / STEP 1: ENTER BET</p>
+                        </div>
+                        <div>
+                            <div class="input-group input-group-lg">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">your wallet address</span>
+                                </div>
+                                <input type="text" class="form-control" id="yourWalletAddress">
+                            </div>
+                            <div class="form-group hidden">
+                                <div class="input-group input-group-lg">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">address</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="address">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-lg">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">bet</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="amount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="step">
+                            <p>第二步：出招 ／ STEP 2: CHOOSE THROW</p>
+                        </div>
+                        <div id="rsp-choice" class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light">
+                                <input type="radio" name="choice-options" id="optionRock" autocomplete="off" value="rock">
+                                <img src="images/rock.png" />
+                            </label>
+                            <label class="btn btn-light">
+                                <input type="radio" name="choice-options" id="optionScissors" autocomplete="off" value="scissors">
+                                <img src="images/scissors.png" />
+                            </label>
+                            <label class="btn btn-light">
+                                <input type="radio" name="choice-options" id="optionPaper" autocomplete="off" value="paper">
+                                <img src="images/paper.png" />
+                            </label>
+                        </div>   
+                    </div>
+                </div>
+                <div class="row fight-row">
+                    <div class="col">
+                        <a id="fight" class="btn btn-success btn-lg btn-xlg" href="#" role="button">开战! Fight On! 🙏</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- RESULTS PAGE -->
+    <div id="waiting" class="page" style="display:none;">
+        <div class="container results-container">
+            <div class="row">
+                <div class="col">
+                    <div><img src="images/wait.png" /></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RESULTS PAGE -->
+    <div id="results" class="page" style="display:none;">
+        <canvas id="canvas" class="results-win"></canvas>
+        <div class="container results-container">
+            <div class="row">
+                <div class="col">
+                    <div class="results-win"><img src="images/win.png" /></div>
+                    <div class="results-lost"><img src="images/lost.png" /></div>
+                    <div>
+                        <a class="start-battle btn btn-primary btn-lg btn-xlg" href="#" role="button">再来一场! Again!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div id="rooms" class="page">
+        <div class="container results-container">
+            <div class="row">
+                <div class="col">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">😈 挑战者 Creator</th>
+                                <th scope="col">💰 注额 Bet</th>
+                                <th scope="col">挑战？Fight?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>98asd89a7s12h3</td>
+                                <td>10</td>
+                                <td><a href='#' data-address="982347" class="fight-button btn btn-primary">挑战! Fight!</a></td>
+                            </tr>
+                            <tr>
+                                <td>83x83x0283</td>
+                                <td>10000</td>
+                                <td><a href='#' data-address="54389" class="fight-button btn btn-primary">挑战! Fight!</a></td>
+                            </tr>
+                            <tr>
+                                <td>37989x9837x2223</td>
+                                <td>200</td>
+                                <td><a href='#' data-address="17283" class="fight-button btn btn-primary">挑战! Fight!</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Error</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body alert-content">
+                &nbsp;
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- SCRIPTS -->
+    <script src="javascripts/js-cookie.js"></script>
+    <script src="javascripts/scripts.js"></script>
+</body>
+</html>
