@@ -41,9 +41,6 @@ $(function() {
 
     // WALLET
     uiBlock.insert({
-        footer: ".footer",
-        header: ".header",
-        logoMain: ".logo-main",
         selectWalletFile: [".select-wallet-file", onUnlockFile]
     });
     
@@ -322,12 +319,12 @@ function confettiParticle() {
     this.tiltAngle = 0;
 
     this.draw = function() {
-    context.beginPath();
-    context.lineWidth = this.r / 2;
-    context.strokeStyle = this.color;
-    context.moveTo(this.x + this.tilt + this.r / 3, this.y);
-    context.lineTo(this.x + this.tilt, this.y + this.tilt + this.r / 5);
-    return context.stroke();
+        context.beginPath();
+        context.lineWidth = this.r / 2;
+        context.strokeStyle = this.color;
+        context.moveTo(this.x + this.tilt + this.r / 3, this.y);
+        context.lineTo(this.x + this.tilt, this.y + this.tilt + this.r / 5);
+        return context.stroke();
     };
 }
 
